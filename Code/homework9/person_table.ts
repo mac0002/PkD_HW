@@ -82,13 +82,28 @@ function finding_Nemo(people_id: number, relatives: Relations): number | undefin
  *     that includes all relationships according relations.
  */
 export function toHashtable(people: People, relations: Relations): PersonTable {
-    if (is_null(people) === true) {
+
+    if (is_null(people)) {
         return ph_empty(0, hash_id)
     } else {
-        
-            
+        const persontable = ph_empty(people.length, hash_id)
+        function helper(people, relations) {
+            const person_id = head(head(people))
+            const person_name = tail(head(people))
+            const parent = finding_Marlin(person_id, relations)
+            const child = finding_Nemo(person_id, relations)
+            const person = {
+                person_id,
+                person_name,
+                parent,
+                child,
+            }
+            ph_insert(persontable ,person_id, person)
+            return helper(tail(people), relations)
+        }
         }
     }
+
     // return is_null(people) 
     //        ? ph_empty(0, hash_id)
     //        : 
