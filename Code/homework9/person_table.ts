@@ -1,5 +1,5 @@
 // extend imports as needed
-import { Pair, List, head, tail, pair, is_null, remove, map } from '../lib/list';
+import { Pair, List, head, tail, pair, is_null, remove, map, length } from '../lib/list';
 import { hash_id, HashFunction, ChainingHashtable, ProbingHashtable,
     ch_empty, ch_lookup, ch_insert, ch_keys, ch_delete,
     ph_empty, ph_lookup, ph_insert, ph_keys, ph_delete
@@ -8,6 +8,7 @@ import {
     empty as empty_stack, is_empty as isempty_stack, NonEmptyStack, Stack, display_stack, pop, top, push,
     empty
 } from "../lib/stack"
+import { hasUncaughtExceptionCaptureCallback } from 'process';
 
 /* DO NOT MODIFY these type declarations */
 export type People = List<Pair<number,string>>;
@@ -186,7 +187,7 @@ export function toHashtable(people: People, relations: Relations): PersonTable {
     if (is_null(people)) {
         return ph_empty(0, hash_id);
     } else {
-        const persontable: PersonTable = ph_empty(people.length, hash_id);
+        const persontable: PersonTable = ph_empty(length(people), hash_id);
         function helper(P_list: People, R_list: Relations, P_table: PersonTable): PersonTable {
             if (is_null(P_list)){
                 return P_table;
@@ -198,11 +199,12 @@ export function toHashtable(people: People, relations: Relations): PersonTable {
                 const person_info: Person  = {
                     id: person_id,
                     name: person_name,
-                    parents: go_up(person_id, R_list, []),
+                    parents: go_up(person_id, R_list, []).reverse(),
                     children: go_down(person_id, R_list, [])
                 }
-
+                
                 const insert = ph_insert(P_table , person_id, person_info);
+                // console.log(insert)
                 return helper(tail(P_list), R_list, P_table)
             }
 
