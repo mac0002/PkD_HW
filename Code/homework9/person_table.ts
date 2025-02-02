@@ -29,6 +29,9 @@ export type PersonTable = ProbingHashtable<number,Person>;
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+// --------------------------------------------------
+// NOT USED
 export type birth_id = number;
 
 export type npc_name = string;
@@ -40,12 +43,14 @@ type parent_lines = Array<Array<number>>
 export function make_npc(id: birth_id, name: npc_name): Pair<number,string> {
     return pair(id, name);
 }
+// --------------------------------------------------
 
 /**
- * 
- * @param people_id 
- * @param relatives 
- * @returns 
+ * @precondition Id must be from a existing person in people list
+ * @param people_id id of the specific person
+ * @param relatives A Relation list
+ * @returns the closest parent of the specific person. Uses recursion to
+ *      scan through the Relation list.
  */
 function finding_Marlin(people_id: number, relatives: Relations): number | null {
     if (is_null(relatives)) {
@@ -63,10 +68,11 @@ function finding_Marlin(people_id: number, relatives: Relations): number | null 
 }
 
 /**
- * 
- * @param people_id 
- * @param relatives 
- * @returns 
+ * @precondition Id must be from a existing person in people list
+ * @param people_id id of the specific person
+ * @param relatives A Relation list
+ * @returns the closest child of the specific person. Uses recursion to
+ *      scan through the Relation list.
  */
 function finding_Nemo(people_id: number, relatives: Relations): number | null {
     if (is_null(relatives)) {
@@ -86,6 +92,16 @@ function finding_Nemo(people_id: number, relatives: Relations): number | null {
 // First method: chaining. Use parent to find its parents until reaching undefined parent or none found,
 // then go the other way to find all its children 
 
+/**
+ * Finds all person's forebearers with a Relation list, goes upwards in the bloodline,
+ * and stores the information as an array of forebearer ids.
+ * @precondition Id must be from a existing person in people list
+ * @param id id of the specific person
+ * @param rel A Relation list
+ * @param parent_line An array of all forefathers, empty first then push
+ * @returns Returns an array of parents with the closest parent being the first
+ *      in the array
+ */
 function go_up(id: number, rel: Relations, parent_line: Array<number>): Array<number> {
     // if id = 3
     // [2,1,0]
@@ -101,6 +117,16 @@ function go_up(id: number, rel: Relations, parent_line: Array<number>): Array<nu
     }
 }
 
+/**
+ * Finds all person's offsprings with a Relation list, goes downwards in the bloodline,
+ * and stores the information as an array of offspring ids.
+ * @precondition Id must be from a existing person in people list
+ * @param id id of the specific person
+ * @param rel A Relation list
+ * @param parent_line An array of all forefathers, empty first then push
+ * @returns Returns an array of children with the closest child being the first
+ *      in the array
+ */
 function go_down(id: number, rel: Relations, child_line: Array<number>): Array<number> {
     // [4,5,6]
     const child_id = finding_Nemo(id, rel);
@@ -115,7 +141,8 @@ function go_down(id: number, rel: Relations, child_line: Array<number>): Array<n
     }
 }
 
-
+// --------------------------------------------------
+// NOT USED
 function test(rel: Relations, map_full: Array<Array<number>>): Array<Array<number>> {
     if (is_null(rel)) {
         return map_full
@@ -172,7 +199,7 @@ function full_bloodline_map(relatives: Relations): Array<Array<number>> | undefi
 }
 
 // export const make_npc = (id: birth_id, name: npc_name) => pair(id, name);
-
+// --------------------------------------------------
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 /**
@@ -194,8 +221,8 @@ export function toHashtable(people: People, relations: Relations): PersonTable {
             } else {
                 const person_id = head(head(P_list));
                 const person_name = tail(head(P_list));
-                const parent = finding_Marlin(person_id, R_list);
-                const child = finding_Nemo(person_id, R_list);
+                // const parent = finding_Marlin(person_id, R_list);
+                // const child = finding_Nemo(person_id, R_list);
                 const person_info: Person  = {
                     id: person_id,
                     name: person_name,

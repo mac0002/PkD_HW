@@ -5,7 +5,7 @@ import { hash_id, HashFunction, ChainingHashtable, ProbingHashtable,
     ch_empty, ch_lookup, ch_insert, ch_keys, ch_delete,
     ph_empty, ph_lookup, ph_insert, ph_keys, ph_delete
 } from '../lib/hashtables';
-import exp = require('constants');
+
 
 const fantasy_people: People = list(pair(121100001234, "Geralt"), pair(122000003333, "Lambert" ),
                                     pair(110000001233, "Geralt's parent"), pair(125205016789, "Ciri"),
@@ -43,13 +43,14 @@ const Ciri: Person = {
     parents: [121100001234, 110000001233],
     children: []
 };
-// console.log(fantasy_ht);
-// console.log(ph_lookup(fantasy_ht, 125205016789));
+console.log(fantasy_ht);
+console.log(ph_lookup(fantasy_ht, 125205016789));
 
 const table_for_two: PersonTable = toHashtable(people_two_only, relation_two_only);
 
 const chained_ht: PersonTable = toHashtable(people_chained, relation_chained);
-// console.log(chained_ht);
+console.log(chained_ht);
+console.log(descendants(chained_ht, 102307281045))
 
 const null_ht: PersonTable = toHashtable(null_people, null_relations);
 
@@ -63,6 +64,18 @@ test('find Ciri', () => {
 
 test("expect empty table with empty people", () => {
     expect(null_ht).toStrictEqual(ph_empty(0, hash_id));
+});
+
+test("number of people from BCE", () => {
+    expect(BCE_ht.entries).toStrictEqual(2);
+});
+
+test("id of the two", () => {
+    expect(table_for_two.keys).toStrictEqual([140002024952, 142010249985]);
+});
+
+test("number of people in chained bloodline", () => {
+    expect(chained_ht.entries).toStrictEqual(8);
 });
 
 // descendants tests
@@ -84,4 +97,8 @@ test('descendants of B', () => {
 
 test("person id NOT FOUND", () => {
     expect(descendants(chained_ht, 102307289999)).toStrictEqual(undefined)
+});
+
+test("BCE descendants", () => {
+    expect(descendants(BCE_ht, -100500005277)).toStrictEqual([]);
 });
