@@ -84,6 +84,7 @@ function finding_Nemo(people_id: number, relatives: Relations): number | null {
     }
 }
 
+
 // (6,7)
 // (1,2)
 // (3,4)
@@ -254,7 +255,7 @@ export function descendants(ht: PersonTable, id: number): Array<number> | undefi
     if (ph_lookup(ht, id) === undefined) {
         return undefined
     } else {
-        const offspring = ph_lookup(ht, id)?.children
+        const offspring = ph_lookup(ht, id)!.children
         return offspring
     }
 }
