@@ -1,13 +1,13 @@
 import {
-    List, list as lst, Pair, pair, for_each, filter,
-    append
+    List, list as lst, Pair, pair, for_each, filter, is_null, head, tail,
+    append, flatten
 } from '../lib/list';
 
 import {
     type Queue, empty as empty_q, is_empty, enqueue, dequeue, head as qhead
 } from '../lib/queue_array';
 import {
-    ListGraph
+    ListGraph, lg_new
 } from "../lib/graphs";
 
 // Build an array based on a function computing the item at each index
@@ -48,7 +48,9 @@ export function lg_shortest_path({adj, size}: ListGraph,
     const result  = empty_q<number>();  // nodes in the order they are being visited
     const pending = empty_q<number>();  // grey nodes to be processed
     const colour  = build_array(size, _ => white);
-    const prev = build_array(size, _ => 0);
+    const prev = build_array(size, _ => -1);
+
+    // console.log("prev: ", prev) 
 
     // visit a white node
     function bfs_visit(current: number, parent: number | undefined): void {
@@ -90,28 +92,59 @@ export function lg_shortest_path({adj, size}: ListGraph,
             break;
         }
     }
-    function backtracking(s: number, e: number, tracks: Array<number>) {
-        const path: List<number> = lst();
-        for (let location = e; location != 0; location = prev[location]) {
-            append(path, lst(location));
+    console.log("prev: ", prev) 
+    function backtracking(s: number, e: number, tracks: Array<number>): List<number> {
+        if (s === e) {
+           return lst()
         }
-        path!.reverse();
-        return
+        let path: List<number> = null;
+        for (let location = e; location != -1; location = prev[location]) {
+            path = pair(location + 1, path);
+        }
+        console.log(path);
+        if (!is_null(path)) {
+            if (head(path!) === s + 1) {
+                return path
+            }
+        } 
+        return lst()
     }
-
 
     // Convert result from queue to List<number>
-    const result_queue = result; 
-    let result_list: List<number> = null;
-    while (!is_empty(result_queue)) {
-        result_list = append(result_list, lst(qhead(result_queue) + 1));
-        dequeue(result_queue);
-    }
-    return result_list;
+    // const result_queue = result; 
+    // let result_list: List<number> = null;
+    // while (!is_empty(result_queue)) {
+    //     result_list = append(result_list, lst(qhead(result_queue) + 1));
+    //     dequeue(result_queue);
+    // }
+    return backtracking(initial, end, prev);
 }
 
+// Testing ground
+const ex_graph_task1: ListGraph = lg_new(6);
+ex_graph_task1.adj = [lst(1, 2), // Node name/value 1, id 0
+                      lst(3, 5), // ... 
+                      lst(3, 4),
+                      lst(4),
+                      lst(5),    // ...
+                      lst()];    // Node name/value 6, id 5
 
+console.log(lg_shortest_path(ex_graph_task1, 3, 3));
 
+const test_graph: ListGraph = {
+    size: 10,
+    adj: [lst(1),
+           lst(2),
+           lst(3),
+           lst(4),
+           lst(5),
+           lst(6),
+           lst(7),
+           lst(8),
+           lst(9),
+           lst()]
+}
+// console.log(lg_shortest_path(test_graph, 0, 5))
 // --------------------------------------------------
 // NOT USED
 // export function test({adj, size}: ListGraph,
@@ -147,5 +180,5 @@ export function lg_shortest_path({adj, size}: ListGraph,
 //         dequeue(result_queue)
 //     }
 //     return result_list; 
-}
+// }
 // --------------------------------------------------
